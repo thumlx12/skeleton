@@ -38,7 +38,8 @@ public class TagDao {
         List<Integer> taggedReceiptIDs = dsl.selectFrom(TAGS)
                 .where(TAGS.TAG.eq(tagName))
                 .fetch()
-                .map(x -> x.getId());
+                .map(x -> x.getReceiptId());
+
         return dsl.selectFrom(RECEIPTS).where(RECEIPTS.ID.in(taggedReceiptIDs)).fetch();
     }
 }
