@@ -35,7 +35,7 @@ public class TagDao {
                     .returning(TAGS.ID)
                     .fetchOne();
             checkState(tagsRecord != null && tagsRecord.getId() != null, "Insert failed");
-            return tagsRecord.getId();
+            return 1;
         } else {
             dsl.deleteFrom(TAGS).where(TAGS.TAG.eq(tagName).and(TAGS.RECEIPT_ID.eq(receiptID))).execute();
             return -1;
