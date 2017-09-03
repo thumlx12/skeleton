@@ -24,14 +24,22 @@ public class TagDao {
     }
 
     public int insert(String tagName, Integer receiptID) {
-        TagsRecord tagsRecord = dsl
-                .insertInto(TAGS, TAGS.TAG, TAGS.RECEIPT_ID)
-                .values(tagName, receiptID)
-                .returning(TAGS.ID)
+        TagsRecord ifExist = dsl
+                .selectFrom(TAGS)
+                .where(TAGS.TAG.eq(tagName).and(TAGS.RECEIPT_ID.eq(receiptID)))
                 .fetchOne();
-        checkState(tagsRecord != null && tagsRecord.getId() != null, "Insert failed");
-
-        return tagsRecord.getId();
+        if (ifExist == null) {
+            TagsRecord tagsRecord = dsl
+                    .insertInto(TAGS, TAGS.TAG, TAGS.RECEIPT_ID)
+                    .values(tagName, receiptID)
+                    .returning(TAGS.ID)
+                    .fetchOne();
+            checkState(tagsRecord != null && tagsRecord.getId() != null, "Insert failed");
+            return tagsRecord.getId();
+        } else {
+            dsl.deleteFrom(TAGS).where(TAGS.TAG.eq(tagName).and(TAGS.RECEIPT_ID.eq(receiptID))).execute();
+            return -1;
+        }
     }
 
     public List<ReceiptsRecord> getAllTaggedReceipts(String tagName) {
