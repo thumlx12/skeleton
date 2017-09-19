@@ -12,7 +12,6 @@
             const api = "http://localhost:8080";
             const receiptsEndpoint = api + "/receipts";
             const tagsEndpoint = api + "/tags";
-            const x = "  ";
 
             function makeid() {
                 var text = "";
@@ -44,7 +43,7 @@
             };
 
             function removeTag(receiptId, tag) {
-                $.put(tagsEndpoint + "/" + tag.innerText.slice(0, -x.length), receiptId, function () {
+                $.put(tagsEndpoint + "/" + tag.innerText, receiptId, function () {
                     tag.remove();
                 }, 'application/json');
             }
@@ -57,7 +56,7 @@
                 if (receipt.tags) {
                     for (var i = 0; i < receipt.tags.length; i++) {
                         ids[i] = makeid();
-                        tagHtml += `<div id="${ids[i]}" class="tagValue">${receipt.tags[i]}${x}</div>`;
+                        tagHtml += `<div id="${ids[i]}" class="tagValue">${receipt.tags[i]}</div>`;
                     }
                 }
                 var addTagId = makeid();
@@ -76,7 +75,7 @@
                             var duplicate = false;
                             for (var i = 0; i < input.siblings().length; i++) {
                                 var sibling = input.siblings()[i];
-                                if (input.val() === sibling.textContent.substr(0, sibling.textContent.length - x.length)) {
+                                if (input.val() === sibling.textContent.substr(0, sibling.textContent.length)) {
                                     duplicate = true;
                                     input.remove();
                                 }
@@ -84,7 +83,7 @@
                             if (!duplicate) {
                                 $.put(tagsEndpoint + "/" + input.val(), receipt.id, function () {
                                     var newId = makeid();
-                                    var newTag = $(`<div id="${newId}" class="tagValue">${input.val()}${x}</div>`);
+                                    var newTag = $(`<div id="${newId}" class="tagValue">${input.val()}</div>`);
                                     newTag.insertBefore(input);
                                     newTag.on('click', function () {
                                         removeTag(receipt.id, this);
@@ -165,12 +164,13 @@
         #receiptList {
             border-top: 1px solid black;
             border-left: 1px solid black;
+            color: black;
             width: 408px;
             clear: both;
         }
 
         .receipt, .receipt-header {
-            background-color: lightcyan;
+            background-color: powderblue;
             border-bottom: 1px solid black;
             width: 100%;
         }
