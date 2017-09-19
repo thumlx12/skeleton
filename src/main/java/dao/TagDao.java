@@ -10,6 +10,7 @@ import org.jooq.impl.DSL;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkState;
 import static generated.Tables.RECEIPTS;
@@ -49,6 +50,11 @@ public class TagDao {
                 .map(x -> x.getReceiptId());
 
         return dsl.selectFrom(RECEIPTS).where(RECEIPTS.ID.in(taggedReceiptIDs)).fetch();
+    }
+
+    public List<String> getTagsForReceipt(Integer receiptID) {
+        return dsl.selectFrom(TAGS).where(TAGS.RECEIPT_ID.eq(receiptID)).fetch()
+                .stream().map(x -> x.getTag()).collect(Collectors.toList());
     }
 }
 
