@@ -8,8 +8,7 @@
         // This is the idiomatic way to ensure that JQuery does not
         // execute until the page has loaded
         $(function () {
-            const api = "http://18.221.103.165:8080";
-//            const api = "http://localhost:8080";
+            const api= "";
             const receiptsEndpoint = api + "/receipts";
             const tagsEndpoint = api + "/tags";
 
@@ -60,7 +59,7 @@
                     }
                 }
                 var addTagId = makeid();
-                $(`<div class="receipt"><span class="created">${receipt.created}</span><span class="merchant">${receipt.merchantName}</span><span class="value">${receipt.value}</span><span class="tags">${tagHtml}<div id="${addTagId}" class="add-tag">Add +</div></span></div>`)
+                $(`<div class="receipt"><span class="created">${receipt.created}</span><span class="merchant">${receipt.merchantName}</span><span class="amount">${receipt.value}</span><span class="tags">${tagHtml}<div id="${addTagId}" class="add-tag">Add +</div></span></div>`)
                     .appendTo($("#receiptList"));
                 for (var j = 0; j < ids.length; j++) {
                     var tag = $('#' + ids[j]);
