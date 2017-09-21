@@ -30,11 +30,11 @@
             border-top: 1px solid black;
             border-left: 1px solid black;
             color: black;
-            width: 408px;
+            width: 600px;
             clear: both;
         }
 
-        .receipt, .receipt-header {
+        .receipt {
             background-color: darkgrey;
             border-bottom: 2px solid black;
             width: 100%;
@@ -49,15 +49,6 @@
             margin-bottom: 15px;
             display: none;
         }
-
-        /*.receipt span, .receipt-header span {*/
-            /*border-right: 1px solid black;*/
-            /*width: 91px;*/
-            /*display: inline-block;*/
-            /*text-align: center;*/
-            /*padding: 8px;*/
-            /*margin: -1px;*/
-        /*}*/
 
         ::-webkit-input-placeholder {
             color: white;
@@ -100,7 +91,7 @@
 
         .tagValue {
             background-color: tan;
-            border: 1px solid black;
+            border: 2px solid black;
             width: 88px;
             text-align: center;
             border-radius: 50px;
@@ -130,8 +121,8 @@
         // This is the idiomatic way to ensure that JQuery does not
         // execute until the page has loaded
         $(function () {
-//            const api = "";
-            const api = "http://localhost:8080";
+            const api = "";
+//            const api = "http://localhost:8080";
             const receiptTarget = api + "/receipts";
             const tagTarget = api + "/tags";
             const returnKey = 13
@@ -158,13 +149,13 @@
                 if (receipt.tags) {
                     for (var i = 0; i < receipt.tags.length; i++) {
                         tags[i] = generateButtonID();
-                        tagContent += `<div id="${tags[i]}" class="tagValue">${receipt.tags[i]}</div>`;
+                        tagContent += `<span id="${tags[i]}" class="tagValue">${receipt.tags[i]}</span>`;
                     }
                 }
 
                 // add receipts contents
                 var appendTag = generateButtonID();
-                $(`<div class="receipt"><span class="created">Time: ${receipt.created}<br></span><span class="merchant">Merchant: ${receipt.merchantName}<br></span><span class="amount">Amount: ${receipt.value}</span><span class="tags">${tagContent}<div id="${appendTag}" class="add-tag">Add +</div></span></div>`)
+                $(`<div class="receipt"><span class="created">Time: ${receipt.created}<br></span><span class="merchant">Merchant: ${receipt.merchantName}<br></span><span class="amount">Amount: ${receipt.value}<br></span><span class="tags">${tagContent}<div id="${appendTag}" class="add-tag">Add +</div></span></div>`)
                     .appendTo($("#receiptList"));
 
                 // add function to the tag so that it can be deleted once clicked
@@ -182,7 +173,7 @@
                         if (key.which === returnKey) {
                             $.put(tagTarget + "/" + tagContent.val(), receipt.id, function () {
                                 var newTagButtonId = generateButtonID();
-                                var newTagButton = $(`<div id="${newTagButtonId}" class="tagValue">${tagContent.val()}</div>`);
+                                var newTagButton = $(`<span id="${newTagButtonId}" class="tagValue">${tagContent.val()}</span>`);
                                 newTagButton.insertBefore(tagContent);
                                 newTagButton.on('click', function () {
                                     deleteTag(receipt.id, this);
