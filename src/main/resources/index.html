@@ -155,7 +155,11 @@
 
                 // add receipts contents
                 var appendTag = generateButtonID();
-                $(`<div class="receipt"><span class="created">Time: ${receipt.created}<br></span><span class="merchant">Merchant: ${receipt.merchantName}<br></span><span class="amount">Amount: ${receipt.value}<br></span><span class="tags">${tagContent}<div id="${appendTag}" class="add-tag">Add +</div></span></div>`)
+                $(`<div class="receipt">
+                        Time: <span class="created">${receipt.created}</span><br>
+                        Merchant: <span class="merchant">${receipt.merchantName}</span><br>
+                        Amount: <span class="amount">${receipt.value}</span><br>
+                        <span class="tags">${tagContent}<div id="${appendTag}" class="add-tag">Add +</div></span></div>`)
                     .appendTo($("#receiptList"));
 
                 // add function to the tag so that it can be deleted once clicked
