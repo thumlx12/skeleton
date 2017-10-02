@@ -43,7 +43,6 @@ public class ReceiptImageController {
     public ReceiptSuggestionResponse parseReceipt(@NotEmpty String base64EncodedImage) throws Exception {
         Image img = Image.newBuilder().setContent(ByteString.copyFrom(Base64.getDecoder().decode(base64EncodedImage))).build();
         AnnotateImageRequest request = this.requestBuilder.setImage(img).build();
-        System.out.println("Hello World, this is Lixuan Mao");
 
         try (ImageAnnotatorClient client = ImageAnnotatorClient.create()) {
             BatchAnnotateImagesResponse responses = client.batchAnnotateImages(Collections.singletonList(request));
@@ -66,13 +65,16 @@ public class ReceiptImageController {
                 EntityAnnotation textAnnotation = textAnnotations.get(i);
                 String[] currentLineEles = textAnnotation.getDescription().split(" ");
                 for (String ele : currentLineEles) {
-                    if (ele.matches("[0-9]*(\\.[0-9]{2})?")) {
-                        amount = new BigDecimal(textAnnotation.getDescription());
+                    if (ele.matches("$?[0-9]*(\\.[0-9]{2})?")) {
+                        if (ele.charAt(0) == '$') {
+                            amount = new BigDecimal(ele.substring(1));
+                        } else {
+                            amount = new BigDecimal(ele);
+                        }
                         break amountFind;
                     }
                 }
             }
-
             return new ReceiptSuggestionResponse(merchantName, amount);
         }
     }
