@@ -3,17 +3,25 @@ package controllers;
 import api.ReceiptSuggestionResponse;
 import com.google.cloud.vision.v1.*;
 import com.google.protobuf.ByteString;
+import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.imageio.ImageIO;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-
-import org.hibernate.validator.constraints.NotEmpty;
-
-import static java.lang.System.out;
 
 @Path("/images")
 @Consumes(MediaType.TEXT_PLAIN)
@@ -26,6 +34,49 @@ public class ReceiptImageController {
         Feature ocrFeature = Feature.newBuilder().setType(Feature.Type.TEXT_DETECTION).build();
         this.requestBuilder = AnnotateImageRequest.newBuilder().addFeatures(ocrFeature);
 
+    }
+
+    public static String imgToBase64String(final RenderedImage img, final String formatName) {
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(img, formatName, Base64.getEncoder().wrap(os));
+            return os.toString(StandardCharsets.ISO_8859_1.name());
+        } catch (final IOException ioe) {
+            throw new UncheckedIOException(ioe);
+        }
+    }
+
+    public static BufferedImage base64StringToImg(final String base64String) {
+        try {
+            return ImageIO.read(new ByteArrayInputStream(Base64.getDecoder().decode(base64String)));
+        } catch (final IOException ioe) {
+            throw new UncheckedIOException(ioe);
+        }
+    }
+
+    private static BufferedImage cropImage(BufferedImage src, int x, int y, int w, int h) {
+        return src.getSubimage(x, y, w, h);
+    }
+
+    private static String getThumbnail(BufferedImage src, List<EntityAnnotation> textAnnotations) {
+        int upperX = Integer.MAX_VALUE;
+        int upperY = Integer.MAX_VALUE;
+        int lowerX = Integer.MIN_VALUE;
+        int lowerY = Integer.MIN_VALUE;
+        for (EntityAnnotation annotation : textAnnotations) {
+            upperX = Integer.min(upperX, annotation.getBoundingPoly().getVertices(0).getX());
+            upperX = Integer.min(upperX, annotation.getBoundingPoly().getVertices(3).getX());
+            upperY = Integer.min(upperY, annotation.getBoundingPoly().getVertices(0).getY());
+            upperY = Integer.min(upperY, annotation.getBoundingPoly().getVertices(1).getY());
+
+            lowerX = Integer.max(lowerX, annotation.getBoundingPoly().getVertices(1).getX());
+            lowerX = Integer.max(lowerX, annotation.getBoundingPoly().getVertices(2).getX());
+            lowerY = Integer.max(lowerY, annotation.getBoundingPoly().getVertices(2).getY());
+            lowerY = Integer.max(lowerY, annotation.getBoundingPoly().getVertices(3).getY());
+        }
+
+        BufferedImage thumbnail = cropImage(src, upperX, upperY, lowerX - upperX, lowerY - upperY);
+        return imgToBase64String(thumbnail, "png");
     }
 
     /**
@@ -43,6 +94,7 @@ public class ReceiptImageController {
     public ReceiptSuggestionResponse parseReceipt(@NotEmpty String base64EncodedImage) throws Exception {
         Image img = Image.newBuilder().setContent(ByteString.copyFrom(Base64.getDecoder().decode(base64EncodedImage))).build();
         AnnotateImageRequest request = this.requestBuilder.setImage(img).build();
+        BufferedImage originImg = base64StringToImg(base64EncodedImage);
 
         try (ImageAnnotatorClient client = ImageAnnotatorClient.create()) {
             BatchAnnotateImagesResponse responses = client.batchAnnotateImages(Collections.singletonList(request));
@@ -75,7 +127,10 @@ public class ReceiptImageController {
                     }
                 }
             }
-            return new ReceiptSuggestionResponse(merchantName, amount);
+
+            String thumbnail = getThumbnail(originImg, textAnnotations);
+
+            return new ReceiptSuggestionResponse(merchantName, amount, thumbnail);
         }
     }
 }

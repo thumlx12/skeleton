@@ -57,6 +57,20 @@
             width: 100%;
         }
 
+        #thumbnailList {
+            position: absolute;
+            top: 100px;
+            right: 20px;
+            width: 700px;
+        }
+
+        .thumbnail{
+            position: relative;
+            right: 20px;
+            border: 2px solid;
+            width: 50%;
+        }
+
         #receipt-form {
             position: relative;
             width: 408px;
@@ -142,7 +156,6 @@
             position: relative;
 
         }
-
 
         .tagValue {
             background-color: tan;
@@ -242,6 +255,8 @@
                             merchantField.val(obj.merchantName);
                             amountField.prop('disabled', false);
                             amountField.val(obj.amount);
+                            thumbnail_img = "data:image/png;base64,".concat(obj.thumbnail);
+                            $(`<div class="thumbnail"><img src=${thumbnail_img}></div>`).appendTo($("#thumbnailList"));
                         })
                         .always(() => console.log('request complete'));
                     // For debugging, you can uncomment this to see the frame that was captured
@@ -402,6 +417,8 @@
         </div>
     </div>
     <div id="receiptList">
+    </div>
+    <div id="thumbnailList">
     </div>
 </div>
 </body>
