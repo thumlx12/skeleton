@@ -3,6 +3,7 @@ package controllers;
 import api.ReceiptSuggestionResponse;
 import com.google.cloud.vision.v1.*;
 import com.google.protobuf.ByteString;
+import dao.ThumbnailDao;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.imageio.ImageIO;
@@ -28,11 +29,13 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class ReceiptImageController {
     private final AnnotateImageRequest.Builder requestBuilder;
+    final ThumbnailDao thumbnailDao;
 
-    public ReceiptImageController() {
+    public ReceiptImageController(ThumbnailDao dao) {
         // DOCUMENT_TEXT_DETECTION is not the best or only OCR method available
         Feature ocrFeature = Feature.newBuilder().setType(Feature.Type.TEXT_DETECTION).build();
         this.requestBuilder = AnnotateImageRequest.newBuilder().addFeatures(ocrFeature);
+        this.thumbnailDao = dao;
 
     }
 
@@ -129,7 +132,7 @@ public class ReceiptImageController {
             }
 
             String thumbnail = getThumbnail(originImg, textAnnotations);
-
+            thumbnailDao.insert(thumbnail);
             return new ReceiptSuggestionResponse(merchantName, amount, thumbnail);
         }
     }

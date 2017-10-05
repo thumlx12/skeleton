@@ -15,3 +15,10 @@ CREATE TABLE tags(
 
   PRIMARY KEY (id)
 );
+
+CREATE TABLE thumbnails(
+  id INT UNSIGNED AUTO_INCREMENT,
+  img VARCHAR(max),
+
+  PRIMARY KEY (id)
+);

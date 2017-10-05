@@ -6,8 +6,10 @@ package generated;
 
 import generated.tables.Receipts;
 import generated.tables.Tags;
+import generated.tables.Thumbnails;
 import generated.tables.records.ReceiptsRecord;
 import generated.tables.records.TagsRecord;
+import generated.tables.records.ThumbnailsRecord;
 
 import javax.annotation.Generated;
 
@@ -36,6 +38,7 @@ public class Keys {
 
 	public static final Identity<ReceiptsRecord, Integer> IDENTITY_RECEIPTS = Identities0.IDENTITY_RECEIPTS;
 	public static final Identity<TagsRecord, Integer> IDENTITY_TAGS = Identities0.IDENTITY_TAGS;
+	public static final Identity<ThumbnailsRecord, Integer> IDENTITY_THUMBNAILS = Identities0.IDENTITY_THUMBNAILS;
 
 	// -------------------------------------------------------------------------
 	// UNIQUE and PRIMARY KEY definitions
@@ -43,6 +46,7 @@ public class Keys {
 
 	public static final UniqueKey<ReceiptsRecord> CONSTRAINT_F = UniqueKeys0.CONSTRAINT_F;
 	public static final UniqueKey<TagsRecord> CONSTRAINT_2 = UniqueKeys0.CONSTRAINT_2;
+	public static final UniqueKey<ThumbnailsRecord> CONSTRAINT_B = UniqueKeys0.CONSTRAINT_B;
 
 	// -------------------------------------------------------------------------
 	// FOREIGN KEY definitions
@@ -56,10 +60,12 @@ public class Keys {
 	private static class Identities0 extends AbstractKeys {
 		public static Identity<ReceiptsRecord, Integer> IDENTITY_RECEIPTS = createIdentity(Receipts.RECEIPTS, Receipts.RECEIPTS.ID);
 		public static Identity<TagsRecord, Integer> IDENTITY_TAGS = createIdentity(Tags.TAGS, Tags.TAGS.ID);
+		public static Identity<ThumbnailsRecord, Integer> IDENTITY_THUMBNAILS = createIdentity(Thumbnails.THUMBNAILS, Thumbnails.THUMBNAILS.ID);
 	}
 
 	private static class UniqueKeys0 extends AbstractKeys {
 		public static final UniqueKey<ReceiptsRecord> CONSTRAINT_F = createUniqueKey(Receipts.RECEIPTS, Receipts.RECEIPTS.ID);
 		public static final UniqueKey<TagsRecord> CONSTRAINT_2 = createUniqueKey(Tags.TAGS, Tags.TAGS.ID);
+		public static final UniqueKey<ThumbnailsRecord> CONSTRAINT_B = createUniqueKey(Thumbnails.THUMBNAILS, Thumbnails.THUMBNAILS.ID);
 	}
 }

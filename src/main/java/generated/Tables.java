@@ -6,6 +6,7 @@ package generated;
 
 import generated.tables.Receipts;
 import generated.tables.Tags;
+import generated.tables.Thumbnails;
 
 import javax.annotation.Generated;
 
@@ -32,4 +33,9 @@ public class Tables {
 	 * The table public.tags
 	 */
 	public static final Tags TAGS = generated.tables.Tags.TAGS;
+
+	/**
+	 * The table public.thumbnails
+	 */
+	public static final Thumbnails THUMBNAILS = generated.tables.Thumbnails.THUMBNAILS;
 }
