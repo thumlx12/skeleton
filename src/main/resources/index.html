@@ -67,7 +67,6 @@
         .thumbnail{
             position: relative;
             right: 20px;
-            border: 2px solid;
             width: 50%;
         }
 
@@ -189,8 +188,8 @@
         // This is the idiomatic way to ensure that JQuery does not
         // execute until the page has loaded
         $(function () {
-//            const api = "";
-            const api = "http://localhost:8080";
+            const api = "";
+//            const api = "http://localhost:8080";
             const receiptTarget = api + "/receipts";
             const tagTarget = api + "/tags";
             const imageTarget = api + "/images";
@@ -263,7 +262,6 @@
                     // $('BODY').append(canvas);
                     });
             }
-
 
             function generateButtonID() {
                 var id = "";
@@ -342,12 +340,44 @@
                 });
             };
 
-            $.getJSON(receiptTarget, function (receipts) {
-                for (var i = 0; i < receipts.length; i++) {
-                    var receipt = receipts[i];
-                    appendReceipt(receipt);
+            var receiptData, thumbData;
+            $.when(
+                $.getJSON(receiptTarget, function (data) {
+                    receiptData = data;
+                }),
+                $.getJSON(imageTarget, function (data) {
+                    thumbData = data;
+                })
+            ).then(function () {
+                if(receiptData){
+                    for (var i = 0; i < receiptData.length; i++) {
+                        var receipt = receiptData[i];
+                        appendReceipt(receipt);
+                    }
                 }
-            });
+                if(thumbData){
+                    for (var i = 0; i < thumbData.length; i++) {
+                        var thumb = thumbData[i];
+                        thumbnail_img = "data:image/png;base64,".concat(thumb.img);
+                        $(`<div class="thumbnail"><img src=${thumbnail_img}></div>`).appendTo($("#thumbnailList"));
+                    }
+                }
+                
+            })
+//            $.getJSON(imageTarget, function (thumbs) {
+//                for (var i = 0; i < thumbs.length; i++) {
+//                    var thumb = thumbs[i];
+//                    thumbnail_img = "data:image/png;base64,".concat(thumb.img);
+//                    $(`<div class="thumbnail"><img src=${thumbnail_img}></div>`).appendTo($("#thumbnailList"));
+//                }
+//            });
+//
+//            $.getJSON(receiptTarget, function (receipts) {
+//                for (var i = 0; i < receipts.length; i++) {
+//                    var receipt = receipts[i];
+//                    appendReceipt(receipt);
+//                }
+//            });
 
             $('#add-receipt').on('click', function () {
                 $('#receipt-form').show();

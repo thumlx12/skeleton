@@ -1,16 +1,15 @@
 package controllers;
 
 import api.ReceiptSuggestionResponse;
+import api.ThumbnailResponse;
 import com.google.cloud.vision.v1.*;
 import com.google.protobuf.ByteString;
 import dao.ThumbnailDao;
+import generated.tables.records.ThumbnailsRecord;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.imageio.ImageIO;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -23,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 @Path("/images")
 @Consumes(MediaType.TEXT_PLAIN)
@@ -93,6 +94,14 @@ public class ReceiptImageController {
      * String amount;
      * }
      */
+
+    @GET
+    public List<ThumbnailResponse> getThumbnails() {
+        List<ThumbnailsRecord> thumbnailRecords = thumbnailDao.getAllThumbnails();
+        List<ThumbnailResponse> response = thumbnailRecords.stream().map(ThumbnailResponse::new).collect(toList());
+        return response;
+    }
+
     @POST
     public ReceiptSuggestionResponse parseReceipt(@NotEmpty String base64EncodedImage) throws Exception {
         Image img = Image.newBuilder().setContent(ByteString.copyFrom(Base64.getDecoder().decode(base64EncodedImage))).build();

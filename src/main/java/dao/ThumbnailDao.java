@@ -18,13 +18,13 @@ public class ThumbnailDao {
     }
 
     public void insert(String img) {
-        ThumbnailsRecord receiptsRecord = dsl
+        ThumbnailsRecord thumbnailsRecord = dsl
                 .insertInto(THUMBNAILS, THUMBNAILS.IMG)
                 .values(img)
                 .returning(THUMBNAILS.ID)
                 .fetchOne();
 
-        checkState(receiptsRecord != null && receiptsRecord.getId() != null, "Insert failed");
+        checkState(thumbnailsRecord != null && thumbnailsRecord.getId() != null, "Insert failed");
     }
 
     public List<ThumbnailsRecord> getAllThumbnails() {
